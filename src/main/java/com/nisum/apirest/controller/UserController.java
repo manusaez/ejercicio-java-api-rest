@@ -18,7 +18,7 @@ import com.nisum.apirest.dto.UserDto;
 import com.nisum.apirest.service.UserService;
 
 @RestController
-@RequestMapping("api/user")
+@RequestMapping("api")
 public class UserController {
 
     @Autowired
@@ -31,6 +31,7 @@ public class UserController {
     }
 
     @PutMapping("{id}")
+
     public ResponseEntity<UserDto> updateUser(@PathVariable String id, @RequestBody UserDto userDtoReq) {
         UserDto userDtoResp = userService.update(id, userDtoReq);
         return new ResponseEntity<>(userDtoResp, HttpStatus.OK);

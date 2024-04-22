@@ -6,10 +6,13 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.nisum.apirest.dto.ErrorDto;
 import com.nisum.apirest.exception.BusinessException;
 import com.nisum.apirest.exception.UserNotFoundException;
+
+import io.jsonwebtoken.ExpiredJwtException;
 
 @RestControllerAdvice
 public class ExceptionHandlerController {
@@ -43,6 +46,18 @@ public class ExceptionHandlerController {
     public ResponseEntity<ErrorDto> exceptionHandler(HttpRequestMethodNotSupportedException ex) {
         ErrorDto errorDto = ErrorDto.builder().mensaje(ex.getMessage()).build();
         return new ResponseEntity<>(errorDto, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(value = NoResourceFoundException.class)
+    public ResponseEntity<ErrorDto> exceptionHandler(NoResourceFoundException ex) {
+        ErrorDto errorDto = ErrorDto.builder().mensaje(ex.getMessage()).build();
+        return new ResponseEntity<>(errorDto, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(value = ExpiredJwtException.class)
+    public ResponseEntity<ErrorDto> exceptionHandler(ExpiredJwtException ex) {
+        ErrorDto errorDto = ErrorDto.builder().mensaje(ex.getMessage()).build();
+        return new ResponseEntity<>(errorDto, HttpStatus.UNAUTHORIZED);
     }
     
 }

@@ -30,7 +30,7 @@ public class AuthService {
     private AuthenticationManager authenticationManager;
 
     public UserDto login(LoginDto loginDto) {
-        log.info("Datos del usuario: {}", loginDto.getEmail());
+        log.info("Autentificación de usuario: {}", loginDto.getEmail());
         try {
             User user = userRepository.findByEmail(loginDto.getEmail())
                     .orElseThrow(() -> new UserNotFoundException(loginDto.getEmail()));
