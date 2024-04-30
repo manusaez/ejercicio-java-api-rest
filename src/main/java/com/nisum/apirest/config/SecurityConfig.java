@@ -1,6 +1,7 @@
 package com.nisum.apirest.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import com.nisum.apirest.service.UserDetailsServiceImpl;
 
@@ -25,9 +27,16 @@ import com.nisum.apirest.service.UserDetailsServiceImpl;
 public class SecurityConfig {
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsServiceImpl;
+    @Qualifier("handlerExceptionResolver")
+    private HandlerExceptionResolver handlerExceptionResolver;
+
     @Autowired
-    private JWTAuthFIlter jwtAuthFIlter;
+    private UserDetailsServiceImpl userDetailsServiceImpl;
+
+    @Bean
+    public JWTAuthFIlter jwtAuthFIlter() {
+        return new JWTAuthFIlter(handlerExceptionResolver);
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -40,7 +49,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
-                        jwtAuthFIlter, UsernamePasswordAuthenticationFilter.class)
+                        jwtAuthFIlter(), UsernamePasswordAuthenticationFilter.class)
                 .headers(httpSecurityHeadersConfigurer -> {
                     httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
                 })

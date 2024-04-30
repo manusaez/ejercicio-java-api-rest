@@ -1,13 +1,9 @@
 package com.nisum.apirest.service;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,28 +14,15 @@ import io.jsonwebtoken.Jwts;
 @Service
 public class JwtService {
 
-    // NISUM en base64 -> TklTVU0=
-    public static final long EXPIRATION_TIME = 1000 * 60 * 60 * (long) 8; // 8 Horas
+    public static final long EXPIRATION_TIME = 3600000; // 1 hora
     private SecretKey Key;
     
     public JwtService(){
-        String secreteString = "843567893696976453275974432697R634976R738467TR678T34865R6834R8763T478378637664538745673865783678548735687R3";
-        byte[] keyBytes = Base64.getDecoder().decode(secreteString.getBytes(StandardCharsets.UTF_8));
-        this.Key = new SecretKeySpec(keyBytes, "HmacSHA256");
+        this.Key = Jwts.SIG.HS256.key().build();
     }
 
     public String generateToken(UserDetails userDetails){
         return Jwts.builder()
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(Key)
-                .compact();
-    }
-
-    public String generateRefreshToken(HashMap<String, Object> claims, UserDetails userDetails){
-        return Jwts.builder()
-                .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))

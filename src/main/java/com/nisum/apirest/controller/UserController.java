@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nisum.apirest.dto.UserDto;
 import com.nisum.apirest.service.UserService;
 
+import jakarta.validation.Valid;
+
+
 @RestController
 @RequestMapping("api")
 public class UserController {
@@ -25,7 +28,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDtoReq) {
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDtoReq) {
         UserDto userDtoResp = userService.crear(userDtoReq);
         return new ResponseEntity<>(userDtoResp, HttpStatus.CREATED);
     }
@@ -38,8 +41,9 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<UserDto> user = userService.getAllUsers();
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping("{id}")
@@ -48,8 +52,11 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
-    public void deleteUserById(@PathVariable("id") String id) {
+    public ResponseEntity<Void> deleteUserById(@PathVariable("id") String id) {
+
         userService.deleteUserById(id);
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/email/{email}")

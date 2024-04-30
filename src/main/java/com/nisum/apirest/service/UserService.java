@@ -83,7 +83,7 @@ public class UserService {
     }
 
     public List<UserDto> getAllUsers() {
-        return userRepository.findAll().stream().map(UserDto::fromEntity).toList();
+        return userRepository.findAll().stream().filter(User::getIsActive).map(UserDto::fromEntity).toList();
     }
 
     public void deleteUserById(String id) {
